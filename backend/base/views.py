@@ -1,9 +1,9 @@
-from django.shortcuts import render
-from django.http import JsonResponse
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .products import products
-
+from .models import Book
+from.serializer import BookSerializer
 
 @api_view(['GET'])
 def getRouter(request):
@@ -11,15 +11,14 @@ def getRouter(request):
 
 
 @api_view(['GET'])
-def getProducts(request):
-    return Response(products)
+def getBooks(request):
+    books = Book.objects.all()
+    serializer = BookSerializer(books, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
-def getProduct(request, pk):
-    product = None
-    for singl_prod in products:
-        if singl_prod['_id'] == pk:
-            product = singl_prod
-            break
-    return Response(product)
+def getBook(request, pk):
+    book = Book.objects.get(_id=pk)
+    serializer = BookSerializer(book, many=False)
+    return Response(serializer.data)
