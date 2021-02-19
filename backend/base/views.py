@@ -1,7 +1,6 @@
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .products import products
 from .models import Book
 from.serializer import BookSerializer
 
