@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Book
+from .models import Book, Author
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -38,7 +38,18 @@ class UserSerializerWithToken(UserSerializer):
         return str(token.access_token)
 
 
+class AuthorSerializer(serializers.ModelSerializer):
+
+    def to_representation(self, value):
+        return f"{value.first_name} {value.second_name}"
+
+    class Meta:
+        model = Author
+
+
 class BookSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer(read_only=True, many=True)
+
     class Meta:
         model = Book
         fields = '__all__'
