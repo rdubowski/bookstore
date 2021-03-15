@@ -8,7 +8,7 @@ from rest_framework import status
 
 
 @api_view(['POST'])
-@permission_classes(['IsAuthenticated', ])
+@permission_classes([IsAuthenticated])
 def addOrderItems(request):
     user = request.user
     data = request.data
@@ -32,15 +32,29 @@ def addOrderItems(request):
         )
         for i in orderItems:
             book = Book.objects.get(_id=i['book'])
-            item = OrderItem(
+            item = OrderItem.objects.create(
                 book=book,
                 order=order,
                 name=book.name,
-                qty=i['qty'],
+                quantity=i['qty'],
                 price=i['price'],
                 image=book.image.url
             )
-            book.countInStock -= item.qty
+            book.countInStock -= item.quantity
             book.save()
-        serializer = OrderSerializer(order, many=True)
+        serializer = OrderSerializer(order, many=False)
         return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getOrderById(request, pk):
+    user = request.user
+    try:
+        order = Order.objects.get(_id=pk)
+        if user.is_staff or order.user == user:
+            serializer = OrderSerializer(order, many=False)
+            return Response(serializer.data)
+        else:
+            Response({'detail': 'Not authorized to view this order'}, status=status.HTTP_400_BAD_REQUEST)
+    except:
+        return Response({'detail': 'Order does not exists'}, statu=status.HTTP_400_BAD_REQUEST)
