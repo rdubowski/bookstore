@@ -5,7 +5,7 @@ import {
     ORDER_CREATE_SUCCESS,
     ORDER_CREATE_FAIL,
 } from '../constants/orderConstans'
-
+import { CART_CLEAR_ITEMS } from "../constants/cartConstans";
 
 export const createOrder = (order) => async (dispatch, getState) => {
     try {
@@ -34,7 +34,10 @@ export const createOrder = (order) => async (dispatch, getState) => {
             type: ORDER_CREATE_SUCCESS,
             payload: data
         })
-
+        dispatch({
+            type: CART_CLEAR_ITEMS,
+            payload: data
+        })
 
         localStorage.removeItem('cartItems')
 

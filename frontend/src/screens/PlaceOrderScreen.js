@@ -19,13 +19,12 @@ function PlaceOrderScreen({history}) {
 
     if (!cart.paymentMethod) {
         history.push('/payment')
-        dispatch({type: ORDER_CREATE_RESET}
-        )
     }
 
     useEffect(() => {
         if (success) {
             history.push(`/order/${order._id}`)
+            dispatch({ type: ORDER_CREATE_RESET })
         }
     }, [success, history])
     const placeOrder = () => {
