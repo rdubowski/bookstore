@@ -57,4 +57,4 @@ def getOrderById(request, pk):
         else:
             Response({'detail': 'Not authorized to view this order'}, status=status.HTTP_400_BAD_REQUEST)
     except:
-        return Response({'detail': 'Order does not exists'}, statu=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Order does not exists'}, status=status.HTTP_400_BAD_REQUEST)
