@@ -4,28 +4,50 @@ import {Link} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import Message from "../components/Message";
 import Loader from "../components/Loader";
-import {getOrderDetails} from "../actions/orderActions";
+import {getOrderDetails, payOrder} from "../actions/orderActions";
+import {PayPalButton} from "react-paypal-button-v2";
+import {ORDER_PAY_RESET} from "../constants/orderConstans";
 
 function OrderScreen({match}) {
     const orderId = match.params.id
     const dispatch = useDispatch()
 
-
+    const [sdkReady, setSdkReady] = useState(false)
     const orderDetails = useSelector(state => state.orderDetails)
     const {order, error, loading} = orderDetails
+    const orderPay = useSelector(state => state.orderPay)
+    const {loading: loadingPay, success: successPay} = orderPay
 
     if (!loading && !error) {
         order.itemsPrice = order.orderItems.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2)
     }
-
-
+    //
+    const addPaypalScript = () => {
+        const script = document.createElement('script')
+        script.type = 'text/javascript'
+        script.src = "https://www.paypal.com/sdk/js?client-id=AerQSGoEFJKaZViegSmbolmitXX2r4M4QN5DiKWwlEBsENraMp6zx4r4N-or5Tnpo2MDkTfGC_xXaY1K"
+        script.async = true
+        script.onload = () => {
+            setSdkReady(true)
+        }
+        document.body.appendChild(script)
+    }
 
     useEffect(() => {
-        if (!order || order._id !== Number(orderId)) {
+        if (!order || successPay || order._id !== Number(orderId)) {
+            dispatch({type: ORDER_PAY_RESET})
             dispatch(getOrderDetails(orderId))
+        } else if (!order.isPaid) {
+            if (!window.paypal) {
+                addPaypalScript()
+            } else {
+                setSdkReady(true)
+            }
         }
-    }, [dispatch, order, orderId])
-
+    }, [dispatch, order, orderId, successPay])
+    const successPaymentHandler = (paymentResult) => {
+        dispatch(payOrder(orderId, paymentResult))
+    }
     return loading ? (<Loader/>
     ) : error ? (
         <Message variant='danger'>{error}</Message>
@@ -37,19 +59,18 @@ function OrderScreen({match}) {
                     <ListGroup variant='flush'>
                         <ListGroup.Item>
                             <h2>Shipping</h2>
-                            <p>
                                 <strong>Shipping: </strong>
                                 <p><strong>Name: </strong> {order.user.name}</p>
-                                <p><strong>Email: </strong><a href={`mailto:${order.user.email}`}>{order.user.email}</a></p>
+                                <p><strong>Email: </strong><a href={`mailto:${order.user.email}`}>{order.user.email}</a>
+                                </p>
                                 {order.shippingAddress.address}, {order.shippingAddress.city}
                                 {' '}
                                 {order.shippingAddress.postalCode},
                                 {' '}
                                 {order.shippingAddress.country}
-                            </p>
                             {order.isDelivered ? (
                                 <Message variant='success'>Delivered at {order.deliveredAt}</Message>
-                            ): (
+                            ) : (
                                 <Message variant='warning'>Not delivered</Message>
                             )}
                         </ListGroup.Item>
@@ -61,7 +82,7 @@ function OrderScreen({match}) {
                             </p>
                             {order.isPaid ? (
                                 <Message variant='success'>Paid on {order.paidAt}</Message>
-                            ): (
+                            ) : (
                                 <Message variant='warning'>Not paid</Message>
                             )}
                         </ListGroup.Item>
@@ -81,7 +102,8 @@ function OrderScreen({match}) {
                                                     <Link to={`/books/${item.book}`}>{item.name}</Link>
                                                 </Col>
                                                 <Col>
-                                                    {item.quantity} X ${item.price} = ${(item.quantity * item.price).toFixed(2)}
+                                                    {item.quantity} X ${item.price} =
+                                                    ${(item.quantity * item.price).toFixed(2)}
                                                 </Col>
                                             </Row>
                                         </ListGroup.Item>
@@ -121,6 +143,20 @@ function OrderScreen({match}) {
                                     <Col>${order.totalPrice} </Col>
                                 </Row>
                             </ListGroup.Item>
+                            {!order.isPaid && (
+                                <ListGroup.Item>
+                                    {loadingPay && <Loader/>}
+
+                                    {!sdkReady ? (
+                                        <Loader/>
+                                    ) : (
+                                        <PayPalButton
+                                            amount={order.totalPrice}
+                                            onSuccess={successPaymentHandler}
+                                        />
+                                    )}
+                                </ListGroup.Item>
+                            )}
                         </ListGroup>
                     </Card>
                 </Col>
