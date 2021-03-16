@@ -18,6 +18,17 @@ def getBook(request, pk):
     serializer = BookSerializer(book, many=False)
     return Response(serializer.data)
 
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def add_book(request):
+    user = request.user
+    book = Book.objects.create(
+
+    )
+    serializer = BookSerializer(book, many=False)
+    return Response(serializer.data)
+
+
 @api_view(['DELETE'])
 @permission_classes([IsAdminUser])
 def delete_book(request, pk):

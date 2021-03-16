@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.getBooks, name='books'),
     path('<str:pk>/', views.getBook, name='book'),
     path('delete/<str:pk>/', views.delete_book, name='book_delete'),
+    path('add/', views.add_book, name='book_add')
 ]
