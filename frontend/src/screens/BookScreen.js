@@ -33,6 +33,7 @@ function BookScreen({match, history}) {
                             <ListGroup variant="flush">
                                 <ListGroup.Item>
                                     <h3>{book.name}</h3>
+                                    {book.author}
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     <Rating value={book.rating} text={`${book.numReviews} reviews`} color={"#f8e825"}/>
@@ -42,6 +43,9 @@ function BookScreen({match, history}) {
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     {book.description}
+                                </ListGroup.Item>
+                                <ListGroup.Item>
+                                    Genre: {book.genre}
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     Number of pages: {book.pagesNum}
