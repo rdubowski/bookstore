@@ -29,7 +29,7 @@ def add_book(request):
         price=0,
         countInStock=0,
         description='',
-        PagesNum=0,
+        pagesNum=0,
         ISBN='',
     )
     serializer = BookSerializer(book, many=False)
@@ -47,8 +47,9 @@ def update_book(request, pk):
     book.countInStock = data['countInStock']
     book.ISBN = data['ISBN']
     book.pagesNum = data['pagesNum']
-    book.author.set(Author.objects.get_or_create(full_name=data['author']))
-    book.genre.set(Genre.objects.get_or_create(name=data['genre']))
+    book.author = data['author']
+    book.genre = data['genre']
+    book.save()
     serializer = BookSerializer(book, many=False)
     return Response(serializer.data)
 
@@ -59,3 +60,13 @@ def delete_book(request, pk):
     book = Book.objects.get(_id=pk)
     book.delete()
     return Response('Book has been deleted')
+
+
+@api_view(['POST'])
+def uploadImage(request):
+    data = request.data
+    book_id = data['book_id']
+    book = Book.objects.get(_id=book_id)
+    book.image = request.FILES.get('image')
+    book.save()
+    return Response('Image was uploaded')
