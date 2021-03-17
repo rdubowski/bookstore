@@ -18,6 +18,7 @@ def getBook(request, pk):
     serializer = BookSerializer(book, many=False)
     return Response(serializer.data)
 
+
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 def add_book(request):
@@ -28,23 +29,29 @@ def add_book(request):
         price=0,
         countInStock=0,
         description='',
+        PagesNum=0,
+        ISBN='',
     )
     serializer = BookSerializer(book, many=False)
     return Response(serializer.data)
 
+
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
-def update_product(request, pk):
+def update_book(request, pk):
     data = request.data
     book = Book.objects.get(_id=pk)
     book.name = data['name']
     book.description = data['description']
     book.price = data['price']
     book.countInStock = data['countInStock']
-    book.author = Author.objects.get_or_create(full_name=data['author'])
-    book.genre = Genre.objects.get_or_create(name=data['genre'])
+    book.ISBN = data['ISBN']
+    book.pagesNum = data['pagesNum']
+    book.author.set(Author.objects.get_or_create(full_name=data['author']))
+    book.genre.set(Genre.objects.get_or_create(name=data['genre']))
     serializer = BookSerializer(book, many=False)
     return Response(serializer.data)
+
 
 @api_view(['DELETE'])
 @permission_classes([IsAdminUser])
