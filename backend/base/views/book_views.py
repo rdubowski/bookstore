@@ -63,7 +63,7 @@ def delete_book(request, pk):
 
 
 @api_view(['POST'])
-def uploadImage(request):
+def upload_image(request):
     data = request.data
     book_id = data['book_id']
     book = Book.objects.get(_id=book_id)

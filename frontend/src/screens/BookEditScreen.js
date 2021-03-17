@@ -7,6 +7,7 @@ import Message from "../components/Message";
 import FormContainer from "../components/FormContainer";
 import {listBookDetails, updateBook} from "../actions/bookActions";
 import {BOOK_UPDATE_RESET} from "../constants/bookConstants";
+import axios from "axios";
 
 function BookEditScreen({match, history}) {
     const bookId = match.params.id
@@ -19,7 +20,7 @@ function BookEditScreen({match, history}) {
     const [ISBN, setISBN] = useState(0)
     const [author, setAuthor] = useState('')
     const [genre, setGenre] = useState('')
-
+    const [uploading, setUploading] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -65,6 +66,25 @@ function BookEditScreen({match, history}) {
             ISBN,
             pagesNum
         }))
+    }
+    const uploadFileHandler = async (e) => {
+        const file = e.target.files[0]
+        const formData = new FormData()
+        formData.append('image', file)
+        formData.append('book_id', bookId)
+        setUploading(true)
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+            const {data} = await axios.post('/api/books/upload/', formData, config)
+            setImage(data)
+            setUploading(false)
+                } catch (error) {
+            setUploading(false)
+        }
     }
 
     return (
@@ -123,6 +143,13 @@ function BookEditScreen({match, history}) {
                             >
 
                             </Form.Control>
+                            <Form.File
+                                id='image-fie'
+                                label='Choose file'
+                                custom
+                                onChange={uploadFileHandler}>
+                            </Form.File>
+                            {uploading && <Loader/>}
                         </Form.Group>
                         <Form.Group controlId='countInStock'>
                             <Form.Label>Count in stock</Form.Label>
