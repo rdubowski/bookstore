@@ -41,7 +41,7 @@ class UserSerializerWithToken(UserSerializer):
 class AuthorSerializer(serializers.ModelSerializer):
 
     def to_representation(self, value):
-        return f"{value.first_name} {value.second_name}"
+        return value.full_name
 
     class Meta:
         model = Author
