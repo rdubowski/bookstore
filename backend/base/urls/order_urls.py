@@ -6,6 +6,7 @@ urlpatterns = [
     path('add/', views.addOrderItems, name='order-add'),
     path('myorders/', views.get_my_orders, name='my-orders'),
     path('<str:pk>/', views.getOrderById, name='order-get'),
+    path('<str:pk>/deliver/', views.update_order_to_delivered, name='deliver'),
     path('<str:pk>/pay/', views.updateOrderToPaid, name='pay'),
 
 ]
