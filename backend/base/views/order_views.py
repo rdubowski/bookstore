@@ -54,8 +54,12 @@ def get_my_orders(request):
     serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data)
 
-
-
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_orders(request):
+    orders = Order.objects.all()
+    serializer = OrderSerializer(orders, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -71,6 +75,7 @@ def getOrderById(request, pk):
             Response({'detail': 'Not authorized to view this order'}, status=status.HTTP_400_BAD_REQUEST)
     except:
         return Response({'detail': 'Order does not exists'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
