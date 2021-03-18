@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from base.models import Book, Review
 from base.serializers import BookSerializer
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 @api_view(['GET'])
@@ -12,6 +13,24 @@ def getBooks(request):
     if query == None:
         query = ''
     books = Book.objects.filter(name__icontains=query)
+    page = request.query_params.get('page')
+    paginator = Paginator(books, 5)
+    try:
+        books = paginator.page(page)
+    except PageNotAnInteger:
+        books = paginator.page(1)
+    except EmptyPage:
+        books = paginator.page(paginator.num_pages)
+    if page == None:
+        page = 1
+    page = int(page)
+    serializer = BookSerializer(books, many=True)
+    return Response({'books': serializer.data, 'page': page, 'pages': paginator.num_pages})
+
+
+@api_view(['GET'])
+def get_top_books(request):
+    books = Book.objects.filter(rating__gte=4).order_by('-rating')[0:5]
     serializer = BookSerializer(books, many=True)
     return Response(serializer.data)
 

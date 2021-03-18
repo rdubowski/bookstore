@@ -4,14 +4,14 @@ import {Row, Col} from 'react-bootstrap';
 import Book from '../components/Book'
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import Paginate from "../components/Paginate";
 import {listBooks} from "../actions/bookActions";
 
 function HomeScreen({history}) {
     const dispatch = useDispatch()
     const bookList = useSelector(state => state.bookList)
-    const {error, loading, books} = bookList
+    const {error, loading, books, page, pages} = bookList
     let keyword = history.location.search
-    console.log(keyword)
     useEffect(() => {
             dispatch(listBooks(keyword))
         },
@@ -22,13 +22,18 @@ function HomeScreen({history}) {
             {loading ? <Loader/>
                 : error ? <Message variant="danger">{error}</Message>
                     :
-                    <Row>
-                        {books.map(book => (
-                            <Col key={book._id} sm={12} md={6} lg={4} xl={3}>
-                                <Book book={book}/>
-                            </Col>
-                        ))}
-                    </Row>}
+                    <div>
+
+                        <Row>
+                            {books.map(book => (
+                                <Col key={book._id} sm={12} md={6} lg={4} xl={3}>
+                                    <Book book={book}/>
+                                </Col>
+                            ))}
+                        </Row>
+                        <Paginate page={page} pages={pages} keyword={keyword} />
+                    </div>
+            }
 
         </div>
     )

@@ -4,6 +4,7 @@ import {Table, Button, Row, Col, Card} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import Paginate from "../components/Paginate";
 import {listBooks, deleteBook, addBook} from "../actions/bookActions";
 import {BOOK_ADD_RESET} from "../constants/bookConstants";
 
@@ -12,7 +13,7 @@ function BookListScreen({history, match}) {
     const dispatch = useDispatch()
 
     const bookList = useSelector(state => state.bookList)
-    const {loading, error, books} = bookList
+    const {loading, error, books, pages, page} = bookList
 
     const bookDelete = useSelector(state => state.bookDelete)
     const {loading: loadingDelete, error: errorDelete, success: successDelete} = bookDelete
@@ -23,7 +24,7 @@ function BookListScreen({history, match}) {
     const userLogin = useSelector(state => state.userLogin)
     const {userInfo} = userLogin
 
-
+    let keyword = history.location.search
     useEffect(() => {
         dispatch({type: BOOK_ADD_RESET})
         if (!userInfo.isAdmin) {
@@ -32,9 +33,9 @@ function BookListScreen({history, match}) {
         if (successAdd) {
             history.push(`/admin/book/${addedBook._id}/edit`)
         } else {
-            dispatch(listBooks())
+            dispatch(listBooks(keyword))
         }
-    }, [dispatch, history, userInfo, successDelete, successAdd, addedBook])
+    }, [dispatch, history, userInfo, successDelete, successAdd, addedBook, keyword])
 
     const deleteHandler = (id) => {
         if (window.confirm('Are you sure that you want to delete this book?')) {
@@ -65,41 +66,44 @@ function BookListScreen({history, match}) {
                 : error
                     ? (<Message variant="danger">{error}</Message>)
                     : (
-                        <Table striped bordered hover responsive className="table-sm">
-                            <thead>
-                            <tr>
+                        <div>
+                            <Table striped bordered hover responsive className="table-sm">
+                                <thead>
+                                <tr>
 
-                                <th>ID</th>
-                                <th>NAME</th>
-                                <th>PRICE</th>
-                                <th>GENRE</th>
-                                <th>AUTHOR</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {books.map(book => (
-                                <tr key={book._id}>
-                                    <td>{book._id}</td>
-                                    <td>{book.name}</td>
-                                    <td>${book.price}</td>
-                                    <td>{book.genre}</td>
-                                    <td>{book.author}</td>
-                                    <td>
-                                        <LinkContainer to={`/admin/book/${book._id}/edit`}>
-                                            <Button variant='light' className='btn-sm'>
-                                                <i className="fas fa-edit"></i>
-                                            </Button>
-                                        </LinkContainer>
-                                        <Button variant='danger' className='btn-sm'
-                                                onClick={() => deleteHandler(book._id)}>
-                                            <i className="fas fa-trash"></i>
-                                        </Button>
-                                    </td>
+                                    <th>ID</th>
+                                    <th>NAME</th>
+                                    <th>PRICE</th>
+                                    <th>GENRE</th>
+                                    <th>AUTHOR</th>
+                                    <th></th>
                                 </tr>
-                            ))}
-                            </tbody>
-                        </Table>
+                                </thead>
+                                <tbody>
+                                {books.map(book => (
+                                    <tr key={book._id}>
+                                        <td>{book._id}</td>
+                                        <td>{book.name}</td>
+                                        <td>${book.price}</td>
+                                        <td>{book.genre}</td>
+                                        <td>{book.author}</td>
+                                        <td>
+                                            <LinkContainer to={`/admin/book/${book._id}/edit`}>
+                                                <Button variant='light' className='btn-sm'>
+                                                    <i className="fas fa-edit"></i>
+                                                </Button>
+                                            </LinkContainer>
+                                            <Button variant='danger' className='btn-sm'
+                                                    onClick={() => deleteHandler(book._id)}>
+                                                <i className="fas fa-trash"></i>
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </Table>
+                            <Paginate pages={pages} page={page} isAdmin={true}/>
+                        </div>
                     )}
         </div>
     )
