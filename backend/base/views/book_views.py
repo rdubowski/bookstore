@@ -94,5 +94,11 @@ def create_book_review(request, pk):
             rating=data['rating'],
             comment=data['comment']
         )
-        reviews = Book.review_set.all()
-        book.numReviews == len(reviews)
+        reviews = book.review_set.all()
+        book.numReviews = len(reviews)
+        total = 0
+        for review in reviews:
+            total += review.rating
+        book.rating = total / len(reviews)
+        book.save()
+        return Response('Review added')
