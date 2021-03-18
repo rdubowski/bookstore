@@ -16,13 +16,16 @@ import {
     BOOK_UPDATE_REQUEST,
     BOOK_UPDATE_SUCCESS,
     BOOK_UPDATE_FAIL,
+    BOOK_CREATE_REVIEW_REQUEST,
+    BOOK_CREATE_REVIEW_SUCCESS,
+    BOOK_CREATE_REVIEW_FAIL,
 } from "../constants/bookConstants";
 import {ORDER_LIST_MY_FAIL, ORDER_LIST_MY_REQUEST, ORDER_LIST_MY_SUCCESS} from "../constants/orderConstans";
 
-export const listBooks = () => async (dispatch) => {
+export const listBooks = (keyword = '') => async (dispatch) => {
     try {
         dispatch({type: BOOK_LIST_REQUEST})
-        const {data} = await axios.get('/api/books');
+        const {data} = await axios.get(`/api/books${keyword}`);
         dispatch({
             type: BOOK_LIST_SUCCESS,
             payload: data
@@ -167,3 +170,43 @@ export const updateBook = (book) => async (dispatch, getState) => {
         })
     }
 }
+
+
+export const createBookReview = (bookId, review) => async (dispatch, getState) => {
+    try {
+        dispatch({
+            type: BOOK_CREATE_REVIEW_REQUEST
+        })
+
+        const {
+            userLogin: {userInfo},
+        } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        const {data} = await axios.post(
+            `/api/books/${bookId}/reviews/`,
+            review,
+            config
+        )
+
+        dispatch({
+            type: BOOK_CREATE_REVIEW_SUCCESS,
+            payload: data,
+        })
+
+    } catch (error) {
+        dispatch({
+            type: BOOK_CREATE_REVIEW_FAIL,
+            payload: error.response && error.response.data.detail
+                ? error.response.data.detail
+                : error.message,
+        })
+    }
+}
+

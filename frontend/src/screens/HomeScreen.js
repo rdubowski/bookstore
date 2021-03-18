@@ -6,14 +6,16 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import {listBooks} from "../actions/bookActions";
 
-function HomeScreen() {
+function HomeScreen({history}) {
     const dispatch = useDispatch()
     const bookList = useSelector(state => state.bookList)
     const {error, loading, books} = bookList
+    let keyword = history.location.search
+    console.log(keyword)
     useEffect(() => {
-            dispatch(listBooks())
+            dispatch(listBooks(keyword))
         },
-        [dispatch])
+        [dispatch, keyword])
     return (
         <div>
             <h1>Latest Books</h1>

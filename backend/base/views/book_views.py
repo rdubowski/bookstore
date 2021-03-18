@@ -8,7 +8,10 @@ from base.serializers import BookSerializer
 
 @api_view(['GET'])
 def getBooks(request):
-    books = Book.objects.all()
+    query = request.query_params.get('keyword')
+    if query == None:
+        query = ''
+    books = Book.objects.filter(name__icontains=query)
     serializer = BookSerializer(books, many=True)
     return Response(serializer.data)
 
@@ -81,10 +84,10 @@ def create_book_review(request, pk):
     data = request.data
     already_exsists = book.review_set.filter(user=user).exists()
     if already_exsists:
-        content = {'details': 'Product already reviewed'}
+        content = {'detail': 'Product already reviewed'}
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
     elif data['rating'] == 0:
-        content = {'details': 'Please select a rating'}
+        content = {'detail': 'Please select a rating'}
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
     else:
         review = Review.objects.create(
