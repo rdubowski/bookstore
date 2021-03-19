@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
-from base.models import Book, Review
+from base.models import Book, Review, Author, Genre
 from base.serializers import BookSerializer
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -70,8 +70,24 @@ def update_book(request, pk):
     book.countInStock = data['countInStock']
     book.ISBN = data['ISBN']
     book.pagesNum = data['pagesNum']
-    book.author = data['author']
-    book.genre = data['genre']
+    authors = data['author']
+    genres = data['genre']
+    if not isinstance(authors, list):
+        book.author.clear()
+        auths = authors.split(',')
+        for auth in auths:
+            auth = auth.strip()
+            if auth:
+                a = Author.objects.get_or_create(full_name=auth)
+                book.author.add(a[0].id)
+    if not isinstance(genres, list):
+        book.genre.clear()
+        gns = genres.split(',')
+        for gn in gns:
+            gn = gn.strip()
+            if gn:
+                g = Genre.objects.get_or_create(name=gn)
+                book.genre.add(g[0].id)
     book.save()
     serializer = BookSerializer(book, many=False)
     return Response(serializer.data)

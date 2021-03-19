@@ -24,12 +24,12 @@ function BookScreen({match, history}) {
     const bookReviewCreate = useSelector(state => state.bookReviewCreate)
     const {success: successBookReview, loading: loadingBookReview, error: errorBookReview} = bookReviewCreate
     useEffect(() => {
-        if (successBookReview) {
-            setRating(0)
-            setComment('')
-            dispatch({type: BOOK_CREATE_REVIEW_RESET})
-        }
-        dispatch(listBookDetails(match.params.id))
+            if (successBookReview) {
+                setRating(0)
+                setComment('')
+                dispatch({type: BOOK_CREATE_REVIEW_RESET})
+            }
+            dispatch(listBookDetails(match.params.id))
 
         },
         [dispatch, match, successBookReview])
@@ -60,7 +60,12 @@ function BookScreen({match, history}) {
                                     <ListGroup variant="flush">
                                         <ListGroup.Item>
                                             <h3>{book.name}</h3>
-                                            {book.author}
+                                            {book.author && book.author.map((auth, index, arr) => {
+                                                return (<Link to={`/books/${book._id}`}>
+                                                    {index === arr.length - 1 ? auth : `${auth},`}
+                                                </Link>)
+                                            })
+                                            }
                                         </ListGroup.Item>
                                         <ListGroup.Item>
                                             <Rating value={book.rating} text={`${book.numReviews} reviews`}
@@ -73,7 +78,12 @@ function BookScreen({match, history}) {
                                             {book.description}
                                         </ListGroup.Item>
                                         <ListGroup.Item>
-                                            Genre: {book.genre}
+                                            {book.genre && book.genre.map((gen, index, arr) => {
+                                                return (<Link to={`/books/${book._id}`}>
+                                                    {index === arr.length - 1 ? gen : `${gen},`}
+                                                </Link>)
+                                            })
+                                            }
                                         </ListGroup.Item>
                                         <ListGroup.Item>
                                             Number of pages: {book.pagesNum}

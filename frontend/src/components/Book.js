@@ -1,7 +1,7 @@
 import React from 'react';
 import {Card} from 'react-bootstrap';
 import Rating from './Rating'
-import { Link } from 'react-router-dom'
+import {Link} from 'react-router-dom'
 
 function Book({book}) {
     return (
@@ -15,9 +15,12 @@ function Book({book}) {
                         <strong>{book.name}</strong>
                     </Card.Title>
                 </Link>
-                <Link to={`/books/${book._id}`}>
-                <p>{book.author}</p>
-                </Link>
+                    {book.author && book.author.map((auth, index, arr) => {
+                        return (<Link to={`/books/${book._id}`}>
+                            {index === arr.length-1 ? auth : `${auth},`}
+                        </Link>)
+                    })
+                    }
                 <Card.Text as="div">
                     <div className="my-3">
                         <Rating value={book.rating} text={`${book.numReviews} reviews`} color={'#f8e825'}/>

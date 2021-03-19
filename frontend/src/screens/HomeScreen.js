@@ -6,6 +6,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Paginate from "../components/Paginate";
 import {listBooks} from "../actions/bookActions";
+import BookCarousel from "../components/BookCarousel";
 
 function HomeScreen({history}) {
     const dispatch = useDispatch()
@@ -18,6 +19,7 @@ function HomeScreen({history}) {
         [dispatch, keyword])
     return (
         <div>
+            {!keyword && <BookCarousel />}
             <h1>Latest Books</h1>
             {loading ? <Loader/>
                 : error ? <Message variant="danger">{error}</Message>

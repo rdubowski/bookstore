@@ -86,7 +86,7 @@ function BookListScreen({history, match}) {
                                         <td>{book.name}</td>
                                         <td>${book.price}</td>
                                         <td>{book.genre}</td>
-                                        <td>{book.author}</td>
+                                        <td>{book.author && book.author.map(auth => `${auth},`)}</td>
                                         <td>
                                             <LinkContainer to={`/admin/book/${book._id}/edit`}>
                                                 <Button variant='light' className='btn-sm'>

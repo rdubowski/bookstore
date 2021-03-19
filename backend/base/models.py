@@ -1,20 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-#
-# class Genre(models.Model):
-#     name = models.CharField(max_length=100, null=False, blank=True)
-#
-#     def __str__(self):
-#         return self.name
-#
-#
-# class Author(models.Model):
-#     full_name = models.CharField(max_length=100, null=False, blank=True)
-#     date_of_birth = models.DateField(blank=True, null=True)
-#
-#     def __str__(self):
-#         return self.full_name
+
+class Genre(models.Model):
+    name = models.CharField(max_length=100, null=False, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Author(models.Model):
+    full_name = models.CharField(max_length=100, null=False, blank=True)
+    date_of_birth = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return self.full_name
 
 
 class Book(models.Model):
@@ -28,8 +28,8 @@ class Book(models.Model):
     countInStock = models.IntegerField(null=True, blank=True, default=0)
     createdAt = models.DateTimeField(auto_now_add=True)
     publication_date = models.DateField(blank=True, null=True)
-    author = models.CharField(max_length=200, null=True, blank=True)
-    genre = models.CharField(max_length=200, null=True, blank=True)
+    author = models.ManyToManyField(Author)
+    genre = models.ManyToManyField(Genre)
     pagesNum = models.PositiveSmallIntegerField(blank=True, null=True)
     ISBN = models.CharField(max_length=20, null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)

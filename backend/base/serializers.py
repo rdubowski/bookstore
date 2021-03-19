@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Book, Order, OrderItem, ShippingAddress, Review
+from .models import Book, Order, OrderItem, ShippingAddress, Review, Genre, Author
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -44,8 +44,27 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class GenreSerializer(serializers.ModelSerializer):
+    def to_representation(self, value):
+        return value.name
+
+    class Meta:
+        model = Genre
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    def to_representation(self, value):
+        return value.full_name
+
+    class Meta:
+        model = Genre
+
+
 class BookSerializer(serializers.ModelSerializer):
     reviews = serializers.SerializerMethodField(read_only=True)
+    author = AuthorSerializer(many=True)
+    genre = GenreSerializer(many=True)
+
     class Meta:
         model = Book
         fields = '__all__'
@@ -54,6 +73,7 @@ class BookSerializer(serializers.ModelSerializer):
         reviews = obj.review_set.all()
         serializer = ReviewSerializer(reviews, many=True)
         return serializer.data
+
 
 class ShippingAddressSerializer(serializers.ModelSerializer):
     class Meta:

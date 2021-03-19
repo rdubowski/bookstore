@@ -19,6 +19,9 @@ import {
     BOOK_CREATE_REVIEW_REQUEST,
     BOOK_CREATE_REVIEW_SUCCESS,
     BOOK_CREATE_REVIEW_FAIL,
+    BOOK_TOP_REQUEST,
+    BOOK_TOP_SUCCESS,
+    BOOK_TOP_FAIL,
 } from "../constants/bookConstants";
 import {ORDER_LIST_MY_FAIL, ORDER_LIST_MY_REQUEST, ORDER_LIST_MY_SUCCESS} from "../constants/orderConstans";
 
@@ -39,6 +42,25 @@ export const listBooks = (keyword = '') => async (dispatch) => {
         })
     }
 }
+
+export const listTopBooks = () => async (dispatch) => {
+    try {
+        dispatch({type: BOOK_TOP_REQUEST})
+        const {data} = await axios.get(`/api/books/top/`);
+        dispatch({
+            type: BOOK_TOP_SUCCESS,
+            payload: data
+        })
+    } catch (error) {
+        dispatch({
+            type: BOOK_TOP_FAIL,
+            payload: error.response && error.response.data.detail
+                ? error.response.data.detail
+                : error.message,
+        })
+    }
+}
+
 export const listBookDetails = (id) => async (dispatch) => {
     try {
         dispatch({type: BOOK_DETAILS_REQUEST})
