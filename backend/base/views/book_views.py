@@ -12,7 +12,7 @@ def getBooks(request):
     query = request.query_params.get('keyword')
     if query == None:
         query = ''
-    books = Book.objects.filter(name__icontains=query)
+    books = Book.objects.filter(name__icontains=query).order_by('createdAt')
     page = request.query_params.get('page')
     paginator = Paginator(books, 5)
     try:
