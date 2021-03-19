@@ -1,13 +1,16 @@
-from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import (Book,
-                     Order,
-                     OrderItem,
-                     ShippingAddress,
-                     Review,
-                     Genre,
-                     Author)
+from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from .models import (
+    Author,
+    Book,
+    Genre,
+    Order,
+    OrderItem,
+    Review,
+    ShippingAddress,
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,11 +20,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', '_id', 'username', 'email', 'name', 'isAdmin']
+        fields = ["id", "_id", "username", "email", "name", "isAdmin"]
 
     def get_name(self, obj):
         name = obj.first_name
-        if name == '':
+        if name == "":
             name = obj.email
         return name
 
@@ -37,7 +40,7 @@ class UserSerializerWithToken(UserSerializer):
 
     class Meta:
         model = User
-        fields = ['id', '_id', 'username', 'email', 'name', 'isAdmin', 'token']
+        fields = ["id", "_id", "username", "email", "name", "isAdmin", "token"]
 
     def get_token(self, obj):
         token = RefreshToken.for_user(obj)
@@ -47,7 +50,7 @@ class UserSerializerWithToken(UserSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = "__all__"
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -73,7 +76,7 @@ class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = '__all__'
+        fields = "__all__"
 
     def get_reviews(self, obj):
         reviews = obj.review_set.all()
@@ -84,13 +87,13 @@ class BookSerializer(serializers.ModelSerializer):
 class ShippingAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShippingAddress
-        fields = '__all__'
+        fields = "__all__"
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = '__all__'
+        fields = "__all__"
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -100,7 +103,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = "__all__"
 
     def get_orderItems(self, obj):
         items = obj.orderitem_set.all()
@@ -110,7 +113,8 @@ class OrderSerializer(serializers.ModelSerializer):
     def get_shippingAddress(self, obj):
         try:
             address = ShippingAddressSerializer(
-                obj.shippingaddress, many=False).data
+                obj.shippingaddress, many=False
+            ).data
         except:
             address = False
         return address
