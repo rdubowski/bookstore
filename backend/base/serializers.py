@@ -1,6 +1,12 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Book, Order, OrderItem, ShippingAddress, Review, Genre, Author
+from .models import (Book,
+                     Order,
+                     OrderItem,
+                     ShippingAddress,
+                     Review,
+                     Genre,
+                     Author)
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -57,7 +63,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         return value.full_name
 
     class Meta:
-        model = Genre
+        model = Author
 
 
 class BookSerializer(serializers.ModelSerializer):

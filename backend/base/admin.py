@@ -1,10 +1,15 @@
 from django.contrib import admin
-from .models import *
+from .models import (
+    Book,
+    Review,
+    Order,
+    OrderItem,
+    ShippingAddress,
+    Genre,
+    Author)
 
-# Register your models here.
+
 admin.site.register(Book)
-# admin.site.register(Genre)
-# admin.site.register(Author)
 admin.site.register(Review)
 admin.site.register(Order)
 admin.site.register(OrderItem)

@@ -10,22 +10,24 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 @api_view(['GET'])
 def get_books(request):
     query = request.query_params.get('keyword')
-    if query == None:
+    if query is None:
         query = ''
     books = Book.objects.filter(name__icontains=query).order_by('createdAt')
     page = request.query_params.get('page')
-    paginator = Paginator(books, 5)
+    paginator = Paginator(books, 4)
     try:
         books = paginator.page(page)
     except PageNotAnInteger:
         books = paginator.page(1)
     except EmptyPage:
         books = paginator.page(paginator.num_pages)
-    if page == None:
+    if page is None:
         page = 1
     page = int(page)
     serializer = BookSerializer(books, many=True)
-    return Response({'books': serializer.data, 'page': page, 'pages': paginator.num_pages})
+    return Response({'books': serializer.data,
+                     'page': page,
+                     'pages': paginator.num_pages})
 
 
 @api_view(['GET'])
