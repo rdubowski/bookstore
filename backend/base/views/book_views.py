@@ -8,7 +8,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 @api_view(['GET'])
-def getBooks(request):
+def get_books(request):
     query = request.query_params.get('keyword')
     if query == None:
         query = ''
@@ -36,7 +36,7 @@ def get_top_books(request):
 
 
 @api_view(['GET'])
-def getBook(request, pk):
+def get_book(request, pk):
     book = Book.objects.get(_id=pk)
     serializer = BookSerializer(book, many=False)
     return Response(serializer.data)

@@ -9,11 +9,11 @@ from datetime import datetime
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def addOrderItems(request):
+def add_order_items(request):
     user = request.user
     data = request.data
-    orderItems = data['orderItems']
-    if orderItems and len(orderItems) == 0:
+    order_items = data['orderItems']
+    if order_items and len(order_items) == 0:
         return Response({'detail': 'No order Items'}, status=status.HTTP_400_BAD_REQUEST)
     else:
         order = Order.objects.create(
@@ -30,7 +30,7 @@ def addOrderItems(request):
             postalCode=data['shippingAddress']['postalCode'],
             country=data['shippingAddress']['country'],
         )
-        for i in orderItems:
+        for i in order_items:
             book = Book.objects.get(_id=i['book'])
             item = OrderItem.objects.create(
                 book=book,
@@ -64,7 +64,7 @@ def get_orders(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def getOrderById(request, pk):
+def get_order_by_id(request, pk):
     user = request.user
     try:
         order = Order.objects.get(_id=pk)
@@ -79,7 +79,7 @@ def getOrderById(request, pk):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def updateOrderToPaid(request, pk):
+def update_order_to_paid(request, pk):
     order = Order.objects.get(_id=pk)
 
     order.isPaid = True

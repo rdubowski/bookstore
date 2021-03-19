@@ -24,7 +24,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 @api_view(['POST'])
-def registerUser(request):
+def register_user(request):
     data = request.data
     try:
         user = User.objects.create(
@@ -42,7 +42,7 @@ def registerUser(request):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def updateUserProfile(request):
+def update_user_profile(request):
     user = request.user
     serializer = UserSerializerWithToken(user, many=False)
     data = request.data
@@ -57,7 +57,7 @@ def updateUserProfile(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def getUserProfile(request):
+def get_user_profile(request):
     user = request.user
     serializer = UserSerializer(user, many=False)
     return Response(serializer.data)
@@ -65,7 +65,7 @@ def getUserProfile(request):
 
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
-def getUsers(request):
+def get_users(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
