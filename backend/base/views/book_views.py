@@ -33,7 +33,7 @@ def get_books(request):
 
 @api_view(["GET"])
 def get_top_books(request):
-    books = Book.objects.filter(rating__gte=4).order_by("-rating")[0:5]
+    books = Book.objects.filter(rating__gte=4).order_by("-rating")[0:3]
     serializer = BookSerializer(books, many=True)
     return Response(serializer.data)
 
