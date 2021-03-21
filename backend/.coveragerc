@@ -1,0 +1,6 @@
+[run]
+include = base/*
+omit =
+	*apps.py,
+	*migrations/*,
+	*tests/*,

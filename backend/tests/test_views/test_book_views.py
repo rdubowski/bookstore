@@ -5,6 +5,7 @@ import json
 from django.urls import reverse
 from tests.factories import UserFactory, ReviewFactory, BookFactory, ReviewFactory, GenreFactory, AuthorFactory
 from base.models import Book
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 pytestmark = pytest.mark.django_db
 

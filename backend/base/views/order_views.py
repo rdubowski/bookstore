@@ -15,7 +15,7 @@ def add_order_items(request):
     user = request.user
     data = request.data
     order_items = data["orderItems"]
-    if order_items and len(order_items) == 0:
+    if not order_items:
         return Response(
             {"detail": "No order Items"}, status=status.HTTP_400_BAD_REQUEST
         )
@@ -34,14 +34,14 @@ def add_order_items(request):
             postalCode=data["shippingAddress"]["postalCode"],
             country=data["shippingAddress"]["country"],
         )
-        for i in order_items:
-            book = Book.objects.get(_id=i["book"])
+        for single_book in order_items:
+            book = Book.objects.get(_id=single_book["book"])
             item = OrderItem.objects.create(
                 book=book,
                 order=order,
                 name=book.name,
-                quantity=i["qty"],
-                price=i["price"],
+                quantity=single_book["qty"],
+                price=single_book["price"],
                 image=book.image.url,
             )
             book.countInStock -= item.quantity
@@ -61,14 +61,6 @@ def get_my_orders(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_orders(request):
-    orders = Order.objects.all()
-    serializer = OrderSerializer(orders, many=True)
-    return Response(serializer.data)
-
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
 def get_order_by_id(request, pk):
     user = request.user
     try:
@@ -77,7 +69,7 @@ def get_order_by_id(request, pk):
             serializer = OrderSerializer(order, many=False)
             return Response(serializer.data)
         else:
-            Response(
+            return Response(
                 {"detail": "Not authorized to view this order"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -92,11 +84,18 @@ def get_order_by_id(request, pk):
 @permission_classes([IsAuthenticated])
 def update_order_to_paid(request, pk):
     order = Order.objects.get(_id=pk)
-
     order.isPaid = True
     order.paidAt = datetime.now()
     order.save()
     return Response("Order was paid")
+
+
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def get_orders(request):
+    orders = Order.objects.all()
+    serializer = OrderSerializer(orders, many=True)
+    return Response(serializer.data)
 
 
 @api_view(["PUT"])
