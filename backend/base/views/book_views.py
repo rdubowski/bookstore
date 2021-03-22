@@ -131,7 +131,7 @@ def create_book_review(request, pk):
     if already_exsists:
         content = {"detail": "Product already reviewed"}
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
-    elif data["rating"] == 0:
+    elif int(data["rating"]) == 0:
         content = {"detail": "Please select a rating"}
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
     else:

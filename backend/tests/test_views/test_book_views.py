@@ -288,9 +288,11 @@ def test_admin_delete_book(api_client, admin_user):
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
     url_book_delete = reverse("book_delete", args=(book._id,))
     response = api_client.delete(url_book_delete)
+    data = json.loads(response.content)
     books = Book.objects.all()
     assert response.status_code == 200
     assert books.count() == 0
+    assert data == "Book has been deleted"
 
 
 def test_admin_delete_book_not_admin(api_client):
@@ -343,17 +345,17 @@ def test_create_book_review_already_exists(api_client):
     assert data["detail"] == "Product already reviewed"
 
 
-# def test_create_book_review_without_rating(api_client):
-#     user = UserFactory()
-#     book = BookFactory()
-#     refresh = RefreshToken.for_user(user)
-#     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-#     url_create_review = reverse('book_review', args=(book._id,))
-#     data = {"rating": 0, "comment": "mean comment"}
-#     response = api_client.post(url_create_review, data)
-#     data = json.loads(response.content)
-#     assert response.status_code == 400
-#     assert data['detail'] == "Please select a rating"
+def test_create_book_review_without_rating(api_client):
+    user = UserFactory()
+    book = BookFactory()
+    refresh = RefreshToken.for_user(user)
+    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+    url_create_review = reverse('book_review', args=(book._id,))
+    data = {"rating": 0, "comment": "ghgfhfg"}
+    response = api_client.post(url_create_review, data)
+    data = json.loads(response.content)
+    assert response.status_code == 400
+    assert data['detail'] == "Please select a rating"
 
 
 def test_book_review_rating_average(api_client):
