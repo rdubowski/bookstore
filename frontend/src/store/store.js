@@ -6,7 +6,7 @@ import {
     bookDetailsReducer,
     bookDeleteReducer,
     bookAddReducer,
-    bookUpdateReducer, bookReviewCreateReducer, bookTopRatedReducer
+    bookUpdateReducer, bookReviewCreateReducer, bookTopRatedReducer, listBooksByAuthorReducer
 } from "../reducers/bookReducers";
 import {cartReducer} from "../reducers/cartReducers";
 import {
@@ -28,6 +28,7 @@ import {
 
 const reducer = combineReducers({
     bookList: bookListReducer,
+    listBooksByAuthor: listBooksByAuthorReducer,
     bookDetails: bookDetailsReducer,
     bookDelete: bookDeleteReducer,
     bookAdd: bookAddReducer,

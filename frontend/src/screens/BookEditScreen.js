@@ -44,7 +44,7 @@ function BookEditScreen({match, history}) {
                 setPrice(book.price)
                 setImage(book.image)
                 setCountInStock(book.countInStock)
-                setAuthor(book.author)
+                setAuthor(book.author.name)
                 setGenre(book.genre)
                 setISBN(book.ISBN)
                 setPagesNum(book.pagesNum)

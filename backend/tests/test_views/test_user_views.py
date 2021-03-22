@@ -19,12 +19,14 @@ ADMIN_GET_USERS = reverse("users")
 def api_client():
     return APIClient()
 
+
 @pytest.fixture
 def admin_user():
     user = UserFactory.build()
     user.is_staff = True
     user.save()
     return user
+
 
 def test_register_request(api_client):
     data = {
@@ -121,7 +123,7 @@ def test_admin_get_user_by_id(api_client, admin_user):
     example_user = UserFactory()
     refresh = RefreshToken.for_user(admin_user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_get_user_by_id = reverse('user', args=(example_user.id,))
+    url_get_user_by_id = reverse("user", args=(example_user.id,))
     response = api_client.get(url_get_user_by_id)
     data = json.loads(response.content)
     assert response.status_code == 200
@@ -134,7 +136,7 @@ def test_admin_get_user_by_id_not_admin(api_client):
     refresh = RefreshToken.for_user(user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
     example_user = UserFactory()
-    url_get_user_by_id = reverse('user', args=(example_user.id,))
+    url_get_user_by_id = reverse("user", args=(example_user.id,))
     response = api_client.get(url_get_user_by_id)
     assert response.status_code == 403
 
@@ -143,7 +145,7 @@ def test_admin_update_user(api_client, admin_user):
     example_user = UserFactory()
     refresh = RefreshToken.for_user(admin_user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_get_user_by_id = reverse('update_user', args=(example_user.id,))
+    url_get_user_by_id = reverse("update_user", args=(example_user.id,))
     data = {
         "name": "name_example",
         "email": "email@example.com",
@@ -161,7 +163,7 @@ def test_admin_update_user_not_admin(api_client, admin_user):
     example_user = UserFactory()
     refresh = RefreshToken.for_user(example_user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_get_user_by_id = reverse('update_user', args=(example_user.id,))
+    url_get_user_by_id = reverse("update_user", args=(example_user.id,))
     data = {
         "name": "name_example",
         "email": "email@example.com",
@@ -175,7 +177,7 @@ def test_admin_delete_user(api_client, admin_user):
     example_user = UserFactory()
     refresh = RefreshToken.for_user(admin_user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_get_user_by_id = reverse('delete_user', args=(example_user.id,))
+    url_get_user_by_id = reverse("delete_user", args=(example_user.id,))
     response = api_client.delete(url_get_user_by_id)
     data = json.loads(response.content)
     assert response.status_code == 200
@@ -186,6 +188,6 @@ def test_admin_delete_user_not_admin(api_client):
     example_user = UserFactory()
     refresh = RefreshToken.for_user(example_user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_get_user_by_id = reverse('delete_user', args=(example_user.id,))
+    url_get_user_by_id = reverse("delete_user", args=(example_user.id,))
     response = api_client.delete(url_get_user_by_id)
     assert response.status_code == 403

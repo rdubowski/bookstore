@@ -13,7 +13,7 @@ def get_books(request):
     query = request.query_params.get("keyword")
     if query is None:
         query = ""
-    books = Book.objects.filter(name__icontains=query).order_by("createdAt")
+    books = Book.objects.filter(name__icontains=query).order_by("-createdAt")
     page = request.query_params.get("page")
     paginator = Paginator(books, 4)
     try:
@@ -29,6 +29,13 @@ def get_books(request):
     return Response(
         {"books": serializer.data, "page": page, "pages": paginator.num_pages}
     )
+
+
+@api_view(["GET"])
+def get_books_by_auth(request, pk):
+    books = Book.objects.filter(author__id=pk).all()
+    serializer = BookSerializer(books, many=True)
+    return Response(serializer.data)
 
 
 @api_view(["GET"])

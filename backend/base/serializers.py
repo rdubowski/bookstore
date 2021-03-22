@@ -63,7 +63,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class AuthorSerializer(serializers.ModelSerializer):
     def to_representation(self, value):
-        return value.full_name
+        return {"name": value.full_name, "id": value.id}
 
     class Meta:
         model = Author

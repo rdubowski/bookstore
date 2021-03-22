@@ -3,15 +3,22 @@ from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 import json
 from django.urls import reverse
-from tests.factories import UserFactory, ReviewFactory, BookFactory, ReviewFactory, GenreFactory, AuthorFactory
+from tests.factories import (
+    UserFactory,
+    ReviewFactory,
+    BookFactory,
+    ReviewFactory,
+    GenreFactory,
+    AuthorFactory,
+)
 from base.models import Book
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 pytestmark = pytest.mark.django_db
 
-USER_BOOKS_URL = reverse('books')
-USER_TOP_BOOKS = reverse('top_books')
-ADMIN_ADD_BOOK = reverse('book_add')
+USER_BOOKS_URL = reverse("books")
+USER_TOP_BOOKS = reverse("top_books")
+ADMIN_ADD_BOOK = reverse("book_add")
 
 
 @pytest.fixture
@@ -33,8 +40,8 @@ def test_user_get_books_2_books(api_client):
     response = api_client.get(USER_BOOKS_URL)
     data = json.loads(response.content)
     assert response.status_code == 200
-    assert len(data['books']) == 2
-    assert data['pages'] == 1
+    assert len(data["books"]) == 2
+    assert data["pages"] == 1
 
 
 def test_user_get_books_6_books_1st(api_client):
@@ -42,8 +49,8 @@ def test_user_get_books_6_books_1st(api_client):
     response = api_client.get(USER_BOOKS_URL, {"page": 2})
     data = json.loads(response.content)
     assert response.status_code == 200
-    assert len(data['books']) == 2
-    assert data['pages'] == 2
+    assert len(data["books"]) == 2
+    assert data["pages"] == 2
 
 
 def test_user_get_books_6_books_2nd(api_client):
@@ -51,8 +58,8 @@ def test_user_get_books_6_books_2nd(api_client):
     response = api_client.get(USER_BOOKS_URL, {"page": 1})
     data = json.loads(response.content)
     assert response.status_code == 200
-    assert len(data['books']) == 4
-    assert data['pages'] == 2
+    assert len(data["books"]) == 4
+    assert data["pages"] == 2
 
 
 def test_user_get_books_with_keyword_found(api_client):
@@ -60,25 +67,89 @@ def test_user_get_books_with_keyword_found(api_client):
     response = api_client.get(USER_BOOKS_URL, {"keyword": f"{book.name}"})
     data = json.loads(response.content)
     assert response.status_code == 200
-    assert len(data['books']) == 1
+    assert len(data["books"]) == 1
 
 
 def test_user_get_books_with_keyword_not_found(api_client):
     book = BookFactory()
-    response = api_client.get(USER_BOOKS_URL, {"keyword": f"veryrandomkeyowrd"})
+    response = api_client.get(
+        USER_BOOKS_URL, {"keyword": "veryrandomkeyowrd"}
+    )
     data = json.loads(response.content)
     assert response.status_code == 200
-    assert len(data['books']) == 0
+    assert len(data["books"]) == 0
+
+
+def test_get_top_books(api_client):
+    book_1 = BookFactory()
+    book_2 = BookFactory()
+    book_3 = BookFactory()
+    url_create_review_1 = reverse("book_review", args=(book_1._id,))
+    url_create_review_2 = reverse("book_review", args=(book_2._id,))
+    url_create_review_3 = reverse("book_review", args=(book_3._id,))
+    user = UserFactory()
+    refresh = RefreshToken.for_user(user)
+    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+    data = {"rating": 5, "comment": "nice comment"}
+    post_pos_rating_1 = api_client.post(url_create_review_1, data)
+    post_pos_rating_2 = api_client.post(url_create_review_2, data)
+    post_pos_rating_3 = api_client.post(url_create_review_3, data)
+    response = api_client.get(USER_TOP_BOOKS)
+    assert response.status_code == 200
+    assert len(response.data) == 3
+
+
+def test_get_top_book_only_one(api_client):
+    book_1 = BookFactory()
+    book_2 = BookFactory()
+    book_3 = BookFactory()
+    url_create_review_1 = reverse("book_review", args=(book_1._id,))
+    url_create_review_2 = reverse("book_review", args=(book_2._id,))
+    url_create_review_3 = reverse("book_review", args=(book_3._id,))
+    user = UserFactory()
+    refresh = RefreshToken.for_user(user)
+    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+    data_pos = {"rating": 5, "comment": "nice comment"}
+    data_neg = {"rating": 1, "comment": "mean comment"}
+    post_pos_rating_1 = api_client.post(url_create_review_1, data_neg)
+    post_pos_rating_2 = api_client.post(url_create_review_2, data_neg)
+    post_pos_rating_3 = api_client.post(url_create_review_3, data_pos)
+    response = api_client.get(USER_TOP_BOOKS)
+    assert response.status_code == 200
+    assert len(response.data) == 1
+
+
+def test_user_get_books_by_author(api_client):
+    author = AuthorFactory()
+    book = BookFactory(author=(author,))
+    books_by_auth_url = reverse("book_by_auth", args=(author.id,))
+    response = api_client.get(books_by_auth_url)
+    data = json.loads(response.content)
+    assert response.status_code == 200
+    assert data[0]["name"] == book.name
+    assert float(data[0]["price"]) == float(book.price)
+
+
+def test_user_get_2_books_by_author(api_client):
+    author_1 = AuthorFactory()
+    author_2 = AuthorFactory()
+    book_alone = BookFactory(author=(author_1,))
+    book_together = BookFactory(author=(author_1, author_2))
+    books_by_auth_url = reverse("book_by_auth", args=(author_1.id,))
+    response = api_client.get(books_by_auth_url)
+    data = json.loads(response.content)
+    assert response.status_code == 200
+    assert len(data) == 2
 
 
 def test_user_get_book(api_client):
     book = BookFactory()
-    single_book_url = reverse('book', args=(book._id,))
+    single_book_url = reverse("book", args=(book._id,))
     response = api_client.get(single_book_url)
     data = json.loads(response.content)
     assert response.status_code == 200
-    assert data['name'] == book.name
-    assert float(data['price']) == float(book.price)
+    assert data["name"] == book.name
+    assert float(data["price"]) == float(book.price)
 
 
 def test_admin_add_book(api_client, admin_user):
@@ -124,11 +195,11 @@ def test_admin_update_book(api_client, admin_user):
         "genre": "new genre",
     }
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_update_book = reverse('book_update', args=(created_book._id,))
+    url_update_book = reverse("book_update", args=(created_book._id,))
     response = api_client.put(url_update_book, data)
     book = Book.objects.get(_id=1)
-    author_of_book = book.author.filter(full_name=data['author'])
-    genre_of_book = book.genre.filter(name=data['genre'])
+    author_of_book = book.author.filter(full_name=data["author"])
+    genre_of_book = book.genre.filter(name=data["genre"])
     assert response.status_code == 200
     assert book.name == data["name"]
     assert book.description == data["description"]
@@ -154,7 +225,7 @@ def test_admin_update_book_multi_author_and_genre(api_client, admin_user):
         "genre": "new genre, new genre2",
     }
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_update_book = reverse('book_update', args=(created_book._id,))
+    url_update_book = reverse("book_update", args=(created_book._id,))
     response = api_client.put(url_update_book, data)
     book = Book.objects.get(_id=1)
     author_of_book = book.author.all()
@@ -181,7 +252,7 @@ def test_admin_update_book_same_author_and_genre(api_client, admin_user):
         "genre": list(created_book.genre.all()),
     }
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_update_book = reverse('book_update', args=(created_book._id,))
+    url_update_book = reverse("book_update", args=(created_book._id,))
     response = api_client.put(url_update_book, data)
     book = Book.objects.get(_id=1)
     author_of_book = book.author.first().full_name
@@ -206,7 +277,7 @@ def test_admin_update_book_not_admin(api_client):
         "genre": "new genre",
     }
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_update_book = reverse('book_update', args=(created_book._id,))
+    url_update_book = reverse("book_update", args=(created_book._id,))
     response = api_client.put(url_update_book, data)
     assert response.status_code == 403
 
@@ -215,7 +286,7 @@ def test_admin_delete_book(api_client, admin_user):
     book = BookFactory()
     refresh = RefreshToken.for_user(admin_user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_book_delete = reverse('book_delete', args=(book._id,))
+    url_book_delete = reverse("book_delete", args=(book._id,))
     response = api_client.delete(url_book_delete)
     books = Book.objects.all()
     assert response.status_code == 200
@@ -227,7 +298,7 @@ def test_admin_delete_book_not_admin(api_client):
     book = BookFactory()
     refresh = RefreshToken.for_user(user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_book_delete = reverse('book_delete', args=(book._id,))
+    url_book_delete = reverse("book_delete", args=(book._id,))
     response = api_client.delete(url_book_delete)
     books = Book.objects.all()
     assert response.status_code == 403
@@ -239,7 +310,7 @@ def test_create_book_review(api_client):
     book = BookFactory()
     refresh = RefreshToken.for_user(user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_create_review = reverse('book_review', args=(book._id,))
+    url_create_review = reverse("book_review", args=(book._id,))
     data = {"rating": 5, "comment": "nice comment"}
     response = api_client.post(url_create_review, data)
     data = json.loads(response.content)
@@ -251,7 +322,7 @@ def test_create_book_review(api_client):
 
 def test_create_book_review_unauth(api_client):
     book = BookFactory()
-    url_create_review = reverse('book_review', args=(book._id,))
+    url_create_review = reverse("book_review", args=(book._id,))
     data = {"rating": 5, "comment": "nice comment"}
     response = api_client.post(url_create_review, data)
     assert response.status_code == 401
@@ -262,14 +333,14 @@ def test_create_book_review_already_exists(api_client):
     book = BookFactory()
     refresh = RefreshToken.for_user(user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_create_review = reverse('book_review', args=(book._id,))
+    url_create_review = reverse("book_review", args=(book._id,))
     data = {"rating": 5, "comment": "nice comment"}
     api_client.post(url_create_review, data)
     response_2 = api_client.post(url_create_review, data)
     data = json.loads(response_2.content)
     book.refresh_from_db()
     assert response_2.status_code == 400
-    assert data['detail'] == "Product already reviewed"
+    assert data["detail"] == "Product already reviewed"
 
 
 # def test_create_book_review_without_rating(api_client):
@@ -291,7 +362,7 @@ def test_book_review_rating_average(api_client):
     previous_review = ReviewFactory(book=book, rating=3)
     refresh = RefreshToken.for_user(user)
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    url_create_review = reverse('book_review', args=(book._id,))
+    url_create_review = reverse("book_review", args=(book._id,))
     data = {"rating": 5, "comment": "nice comment"}
     response = api_client.post(url_create_review, data)
     data = json.loads(response.content)
@@ -299,42 +370,3 @@ def test_book_review_rating_average(api_client):
     assert response.status_code == 200
     assert data == "Review added"
     assert book.rating == 4
-
-
-def test_get_top_books(api_client):
-    book_1 = BookFactory()
-    book_2 = BookFactory()
-    book_3 = BookFactory()
-    url_create_review_1 = reverse('book_review', args=(book_1._id,))
-    url_create_review_2 = reverse('book_review', args=(book_2._id,))
-    url_create_review_3 = reverse('book_review', args=(book_3._id,))
-    user = UserFactory()
-    refresh = RefreshToken.for_user(user)
-    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    data = {"rating": 5, "comment": "nice comment"}
-    post_pos_rating_1 = api_client.post(url_create_review_1, data)
-    post_pos_rating_2 = api_client.post(url_create_review_2, data)
-    post_pos_rating_3 = api_client.post(url_create_review_3, data)
-    response = api_client.get(USER_TOP_BOOKS)
-    assert response.status_code == 200
-    assert len(response.data) == 3
-
-
-def test_get_top_book_only_one(api_client):
-    book_1 = BookFactory()
-    book_2 = BookFactory()
-    book_3 = BookFactory()
-    url_create_review_1 = reverse('book_review', args=(book_1._id,))
-    url_create_review_2 = reverse('book_review', args=(book_2._id,))
-    url_create_review_3 = reverse('book_review', args=(book_3._id,))
-    user = UserFactory()
-    refresh = RefreshToken.for_user(user)
-    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    data_pos = {"rating": 5, "comment": "nice comment"}
-    data_neg = {"rating": 1, "comment": "mean comment"}
-    post_pos_rating_1 = api_client.post(url_create_review_1, data_neg)
-    post_pos_rating_2 = api_client.post(url_create_review_2, data_neg)
-    post_pos_rating_3 = api_client.post(url_create_review_3, data_pos)
-    response = api_client.get(USER_TOP_BOOKS)
-    assert response.status_code == 200
-    assert len(response.data) == 1

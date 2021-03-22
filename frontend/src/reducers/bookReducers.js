@@ -22,7 +22,7 @@ import {
     BOOK_CREATE_REVIEW_RESET,
     BOOK_TOP_REQUEST,
     BOOK_TOP_SUCCESS,
-    BOOK_TOP_FAIL
+    BOOK_TOP_FAIL, BOOKS_BY_AUTH_REQUEST, BOOKS_BY_AUTH_SUCCESS, BOOKS_BY_AUTH_FAIL
 } from "../constants/bookConstants";
 
 export const bookListReducer =
@@ -126,6 +126,19 @@ export const bookTopRatedReducer =
             case BOOK_TOP_SUCCESS:
                 return {loading: false, books: action.payload,}
             case BOOK_TOP_FAIL:
+                return {loading: false, error: action.payload}
+            default:
+                return state
+        }
+    }
+export const listBooksByAuthorReducer =
+    (state = {books: []}, action) => {
+        switch (action.type) {
+            case BOOKS_BY_AUTH_REQUEST:
+                return {loading: true, books: []}
+            case BOOKS_BY_AUTH_SUCCESS:
+                return {loading: false, books: action.payload,}
+            case BOOKS_BY_AUTH_FAIL:
                 return {loading: false, error: action.payload}
             default:
                 return state

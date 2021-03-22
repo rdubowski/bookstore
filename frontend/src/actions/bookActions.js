@@ -21,7 +21,7 @@ import {
     BOOK_CREATE_REVIEW_FAIL,
     BOOK_TOP_REQUEST,
     BOOK_TOP_SUCCESS,
-    BOOK_TOP_FAIL,
+    BOOK_TOP_FAIL, BOOKS_BY_AUTH_REQUEST, BOOKS_BY_AUTH_SUCCESS, BOOKS_BY_AUTH_FAIL,
 } from "../constants/bookConstants";
 import {ORDER_LIST_MY_FAIL, ORDER_LIST_MY_REQUEST, ORDER_LIST_MY_SUCCESS} from "../constants/orderConstans";
 
@@ -232,3 +232,21 @@ export const createBookReview = (bookId, review) => async (dispatch, getState) =
     }
 }
 
+
+export const listBooksByAuthor = (id) => async (dispatch) => {
+    try {
+        dispatch({type: BOOKS_BY_AUTH_REQUEST})
+        const {data} = await axios.get(`/api/books/author/${id}/`);
+        dispatch({
+            type: BOOKS_BY_AUTH_SUCCESS,
+            payload: data
+        })
+    } catch (error) {
+        dispatch({
+            type: BOOKS_BY_AUTH_FAIL,
+            payload: error.response && error.response.data.detail
+                ? error.response.data.detail
+                : error.message,
+        })
+    }
+}

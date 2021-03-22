@@ -61,8 +61,8 @@ function BookScreen({match, history}) {
                                         <ListGroup.Item>
                                             <h3>{book.name}</h3>
                                             {book.author && book.author.map((auth, index, arr) => {
-                                                return (<Link to={`/books/${book._id}`}>
-                                                    {index === arr.length - 1 ? auth : `${auth},`}
+                                                return (<Link to={`/books/author/${auth.id}`}>
+                                                    {index === arr.length - 1 ? auth.name : `${auth.name},`}
                                                 </Link>)
                                             })
                                             }

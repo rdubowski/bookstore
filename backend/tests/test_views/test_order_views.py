@@ -3,13 +3,18 @@ from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 import json
 from django.urls import reverse
-from tests.factories import OrderFactory, UserFactory, BookFactory, ShippingAddressFactory
+from tests.factories import (
+    OrderFactory,
+    UserFactory,
+    BookFactory,
+    ShippingAddressFactory,
+)
 from base.models import Order
 
 pytestmark = pytest.mark.django_db
 
-USER_ADD_ORDER = reverse('order_add')
-USER_MY_ORDERS = reverse('my_orders')
+USER_ADD_ORDER = reverse("order_add")
+USER_MY_ORDERS = reverse("my_orders")
 ADMIN_ALL_ORDERS = reverse("orders")
 
 
@@ -36,18 +41,18 @@ def test_user_add_order_items_no_items_auth(api_client):
         "taxPrice": 0,
         "shippingPrice": 0,
         "totalPrice": 0,
-        'shippingAddress': {
+        "shippingAddress": {
             "address": "",
             "city": "",
             "postalCode": "",
             "country": "",
-        }
+        },
     }
-    response = api_client.post(USER_ADD_ORDER, data=data, format='json')
+    response = api_client.post(USER_ADD_ORDER, data=data, format="json")
     data = json.loads(response.content)
     orders = Order.objects.all()
     assert response.status_code == 400
-    assert data['detail'] == "No order Items"
+    assert data["detail"] == "No order Items"
     assert orders.count() == 0
 
 
@@ -61,26 +66,23 @@ def test_user_add_order_items_auth(api_client):
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
     data_to_send = {
         "orderItems": [
-            {"book": book_1._id,
-             "qty": 1,
-             "price": book_1.price},
-            {"book": book_2._id,
-             "qty": 1,
-             "price": book_2.price},
-
+            {"book": book_1._id, "qty": 1, "price": book_1.price},
+            {"book": book_2._id, "qty": 1, "price": book_2.price},
         ],
         "paymentMethod": "card",
         "taxPrice": 10,
         "shippingPrice": 10,
         "totalPrice": 20 + book_1.price + book_2.price,
-        'shippingAddress': {
+        "shippingAddress": {
             "address": "street",
             "city": "example_city",
             "postalCode": "00-000",
             "country": "Poland",
-        }
+        },
     }
-    response = api_client.post(USER_ADD_ORDER, data=data_to_send, format='json')
+    response = api_client.post(
+        USER_ADD_ORDER, data=data_to_send, format="json"
+    )
     orders = Order.objects.all()
     book_1.refresh_from_db()
     book_2.refresh_from_db()
