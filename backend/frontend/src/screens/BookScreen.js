@@ -78,14 +78,6 @@ function BookScreen({match, history}) {
                                             {book.description}
                                         </ListGroup.Item>
                                         <ListGroup.Item>
-                                            {book.genre && book.genre.map((gen, index, arr) => {
-                                                return (<Link to={`/books/${book._id}`}>
-                                                    {index === arr.length - 1 ? gen : `${gen},`}
-                                                </Link>)
-                                            })
-                                            }
-                                        </ListGroup.Item>
-                                        <ListGroup.Item>
                                             Number of pages: {book.pagesNum}
                                         </ListGroup.Item>
                                     </ListGroup>
