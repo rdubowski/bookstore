@@ -17,15 +17,12 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keepf the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'https://your-book.herokuapp.com/']
 
@@ -88,12 +85,12 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE":os.environ.get("ENGINE"),
-        "NAME":os.environ.get("NAME"),
-        "USER":os.environ.get("USER"),
-        "PASSWORD":os.environ.get("PASSWORD"),
-        "HOST":os.environ.get("HOST"),
-        "PORT":os.environ.get("PORT")
+        "ENGINE": os.environ.get("ENGINE"),
+        "NAME": os.environ.get("NAME"),
+        "USER": os.environ.get("USER"),
+        "PASSWORD": os.environ.get("PASSWORD"),
+        "HOST": os.environ.get("HOST"),
+        "PORT": os.environ.get("PORT")
     }
 }
 
@@ -168,6 +165,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
-
-if os.getcwd() == '/app':
-    DEBUG = False
+DEBUG = True
+# if os.getcwd() == '/app':
+#     DEBUG = False
