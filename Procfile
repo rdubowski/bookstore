@@ -1,2 +1,1 @@
-gunicorn backend.wsgi --preload -b 0.0.0.0:5000
-
+web: gunicorn backend.wsgi --log-file -
