@@ -13,20 +13,17 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
-
-import environ
+from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-env = environ.Env(DEBUG=(bool, False))
-env_file = os.path.join(BASE_DIR, ".env")
-environ.Env.read_env(env_file)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -92,12 +89,12 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": env("ENGINE"),
-        "NAME": env("NAME"),
-        "USER": env("USER"),
-        "PASSWORD": env("PASSWORD"),
-        "HOST": env("HOST"),
-        "PORT": env("PORT")
+        "ENGINE":config("ENGINE"),
+        "NAME":config("NAME"),
+        "USER":config("USER"),
+        "PASSWORD":config("PASSWORD"),
+        "HOST":config("HOST"),
+        "PORT":config("PORT")
     }
 }
 
@@ -147,9 +144,9 @@ MEDIA_ROOT = BASE_DIR / "static/images"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 CORS_ALLOW_ALL_ORIGINS = True
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
 AWS_QUERYSTRING_AUTH = False
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
