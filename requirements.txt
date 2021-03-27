@@ -1,5 +1,6 @@
 appdirs==1.4.3
 asgiref==3.3.1
+astroid==2.4.2
 attrs==20.3.0
 black==20.8b1
 boto3==1.17.38
@@ -66,3 +67,4 @@ typing-extensions==3.7.4.3
 urllib3==1.25.8
 webencodings==0.5.1
 whitenoise==5.2.0
+virtualenv==20.2.1
