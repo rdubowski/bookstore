@@ -14,6 +14,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 import dj_database_url
+from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keepf the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = config("SECRET_KEY")
 
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'your-book.herokuapp.com']
@@ -85,15 +86,15 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("ENGINE"),
-        "NAME": os.environ.get("NAME"),
-        "USER": os.environ.get("USER"),
-        "PASSWORD": os.environ.get("PASSWORD"),
-        "HOST": os.environ.get("HOST"),
-        "PORT": os.environ.get("PORT")
+        "ENGINE": config("ENGINE"),
+        "NAME": config("NAME"),
+        "USER": config("USER"),
+        "PASSWORD": config("PASSWORD"),
+        "HOST": config("HOST"),
+        "PORT": config("PORT")
     }
 }
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = config('DATABASE_URL')
 db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 # Password validation
@@ -142,9 +143,9 @@ MEDIA_ROOT = BASE_DIR / "static/images"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 CORS_ALLOW_ALL_ORIGINS = True
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
 AWS_QUERYSTRING_AUTH = False
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
