@@ -170,4 +170,3 @@ SIMPLE_JWT = {
 DEBUG = True
 # if os.getcwd() == '/app':
 #     DEBUG = False
-django_heroku.settings(locals())
