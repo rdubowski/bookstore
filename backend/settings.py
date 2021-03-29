@@ -172,6 +172,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
-DEBUG = True
+DEBUG = False
 # if os.getcwd() == '/app':
 #     DEBUG = False
