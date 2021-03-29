@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'your-book.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'https://your-book.herokuapp.com/']
 
 # Application definition
 INSTALLED_APPS = [
@@ -168,6 +168,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
-DEBUG = True
-# if os.getcwd() == '/app':
-#     DEBUG = False
+
+if os.getcwd() == '/app':
+    DEBUG = False
