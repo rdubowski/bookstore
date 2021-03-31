@@ -29,11 +29,24 @@ Project is created with:
 
 ## Setup
 To run this project:
-1. Clone project: git clone https://github.com/rdubowski/bookstore/
-2. Create virtual environment: virtualenv myenv
-3. myenv\scripts\activate
-4. pip install -r requirements.txt
-5. cd frontend
-6. npm install
-7. cd ..
-8. python manage.py runserver
+1. Clone project
+``` git clone https://github.com/rdubowski/bookstore/ ```
+2. Create virtual environment: 
+``` 
+$ virtualenv myenv
+$ myenv\scripts\activate
+```
+3. Install backend dependencies.
+``` 
+$ pip install -r requirements.txt
+```
+4. Install frontend dependencies.
+```
+$ cd frontend/
+$ npm install
+$ cd ..
+```
+5. Run server.
+```
+python manage.py runserver
+```
