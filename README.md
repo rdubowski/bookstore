@@ -14,11 +14,14 @@ This project is simple bookstore website. Features:
   * Can login with username or email
 * Books
   * View Books
-  * As admin user: add, edit, delete books.
+  * As admin user: add, edit, delete books
 * Orders:
   * Make orders
   * Pay for order with PayPal
-  * As admin user: marking order as delivered, delete order, edit order.
+  * As admin user: marking order as delivered, delete order, edit order
+* Reviews:
+  * Add Review to bought books
+  * Books with best reviews displayed at top of homescreen
 	
 ## Technologies
 Project is created with:
