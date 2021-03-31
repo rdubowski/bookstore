@@ -22,7 +22,7 @@ This project is simple bookstore website. Features:
 	
 ## Technologies
 Project is created with:
-* Django (Django Rest Framework)
+* Django(Django Rest Framework)
 * Pytest
 * React(Redux, React Router)
 * Bootstrap
