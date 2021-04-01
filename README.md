@@ -1,7 +1,7 @@
 # Yourbook
 Live  can be viewed at https://your-book.herokuapp.com/
 
-Yourbooks is a bookstore website made using Django Rest Framework and React.
+Yourbook is a bookstore website made using Django Rest Framework and React.
 ## Table of contents
 * [General info](#general-info)
 * [Technologies](#technologies)
